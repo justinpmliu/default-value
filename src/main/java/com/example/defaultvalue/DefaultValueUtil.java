@@ -48,6 +48,14 @@ public class DefaultValueUtil {
         }
     }
 
+    public void setDefaultValues(Object obj, String propertyPrefix, boolean override) throws Exception {
+        if (obj != null) {
+            List<Object> param = new ArrayList<>();
+            param.add(obj);
+            this.setDefaultValues(param, propertyPrefix, override);
+        }
+    }
+
     private Map<String, Object> getDefaultValues(Object obj, String propertyPrefix) {
         Map<String, Object> defaultValues = new HashMap<>();
 
@@ -62,14 +70,6 @@ public class DefaultValueUtil {
         }
 
         return defaultValues;
-    }
-
-    public void setDefaultValues(Object obj, String propertyPrefix, boolean override) throws Exception {
-        if (obj != null) {
-            List<Object> param = new ArrayList<>();
-            param.add(obj);
-            this.setDefaultValues(param, propertyPrefix, override);
-        }
     }
 
 
