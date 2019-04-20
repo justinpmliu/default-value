@@ -45,7 +45,7 @@ public class DefaultValueUtil {
                         }
                         MethodUtils.invokeMethod(obj, setMethodName, ConvertUtils.convert(defaultValue, fieldTypes.get(fieldName)));
                     } catch (Exception e) {
-                        log.error("Cannot set default value " + defaultValue + " to " + obj.getClass().getName() + "." + setMethodName);
+                        log.error("Cannot set default value " + defaultValue + " to " + obj.getClass().getName() + "." + fieldName);
                         throw e;
                     }
                 }

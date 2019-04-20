@@ -20,7 +20,7 @@ public class DefaultValueProperties {
             if (in != null) {
                 prop.load(in);
             } else {
-                log.info("Unable to find config file!");
+                log.error("Unable to find config file!");
             }
         }
     }
