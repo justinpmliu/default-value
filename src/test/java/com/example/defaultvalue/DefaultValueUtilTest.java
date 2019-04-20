@@ -2,6 +2,7 @@ package com.example.defaultvalue;
 
 import com.example.defaultvalue.model.Address;
 import com.example.defaultvalue.model.User;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +20,16 @@ public class DefaultValueUtilTest {
     @Autowired
     private DefaultValueUtil defaultValueUtil;
 
+    private User user;
+
+    @Before
+    public void setUp() {
+        user = new User("Justin");
+    }
+
+
     @Test
     public void setDefaultValuesTestWithoutUserId() throws Exception {
-        User user = new User("Justin");
 
         defaultValueUtil.setDefaultValues(user, "user", false);
 
@@ -30,7 +38,7 @@ public class DefaultValueUtilTest {
 
     @Test
     public void setDefaultValuesTestWithUserIdAndNotOverride() throws Exception {
-        User user = new User("Justin");
+
         user.setId(12345);
 
         defaultValueUtil.setDefaultValues(user, "user", false);
@@ -40,7 +48,7 @@ public class DefaultValueUtilTest {
 
     @Test
     public void setDefaultValuesTestWithUserIdAndOverride() throws Exception {
-        User user = new User("Justin");
+
         user.setId(12345);
 
         defaultValueUtil.setDefaultValues(user, "user", true);
@@ -50,7 +58,6 @@ public class DefaultValueUtilTest {
 
     @Test
     public void setDefaultValuesTestWithAddressAndNotOverride() throws Exception {
-        User user = new User("Justin");
 
         Address address1 = new Address("GZ", "TianHe");
         address1.setRoom(123);
@@ -74,7 +81,6 @@ public class DefaultValueUtilTest {
 
     @Test
     public void setDefaultValuesTestWithAddressAndOverride() throws Exception {
-        User user = new User("Justin");
 
         Address address1 = new Address("GZ", "TianHe");
         address1.setRoom(123);
