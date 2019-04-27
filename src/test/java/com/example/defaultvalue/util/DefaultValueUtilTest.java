@@ -1,7 +1,8 @@
-package com.example.defaultvalue;
+package com.example.defaultvalue.util;
 
 import com.example.defaultvalue.model.Address;
 import com.example.defaultvalue.model.User;
+import com.example.defaultvalue.util.DefaultValueUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

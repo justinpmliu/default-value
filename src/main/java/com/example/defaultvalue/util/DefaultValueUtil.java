@@ -1,4 +1,4 @@
-package com.example.defaultvalue;
+package com.example.defaultvalue.util;
 
 import com.example.defaultvalue.config.DefaultValueConfig;
 import lombok.extern.log4j.Log4j2;
@@ -19,6 +19,9 @@ import java.util.Map;
 public class DefaultValueUtil {
     @Autowired
     private DefaultValueConfig defaultValueConfig;
+
+    @Autowired
+    private ReflectionUtil reflectionUtil;
 
     public void setDefaultValues(List objs, String service, String clazz, boolean override) throws Exception {
         if (!CollectionUtils.isEmpty(objs)) {
@@ -54,31 +57,17 @@ public class DefaultValueUtil {
         }
     }
 
-
     private Map<String, Object> getDefaultValues(Object obj, String service, String clazz) {
         Map<String, Object> result = new HashMap<>();
 
         Map<String, String> fieldValues = defaultValueConfig.getFieldValues(service, clazz);
-        Map<String, Class> fieldTypes = this.getFieldTypes(obj);
+        Map<String, Class> fieldTypes = reflectionUtil.getFieldTypes(obj.getClass());
 
         for (Map.Entry<String, String> entry : fieldValues.entrySet()) {
             String field = entry.getKey();
             String value = entry.getValue();
 
             result.put(field, ConvertUtils.convert(value, fieldTypes.get(field)));
-        }
-
-        return result;
-    }
-
-
-    private Map<String, Class> getFieldTypes(Object obj) {
-        Map<String, Class> result = new HashMap<>();
-
-        Field[] fields = obj.getClass().getDeclaredFields();
-
-        for (Field field : fields) {
-            result.put(field.getName(), field.getType());
         }
 
         return result;

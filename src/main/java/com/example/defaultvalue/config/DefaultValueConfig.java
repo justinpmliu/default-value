@@ -3,7 +3,6 @@ package com.example.defaultvalue.config;
 import com.example.defaultvalue.mapper.DefaultValueMapper;
 import com.example.defaultvalue.model.DefaultValue;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -19,7 +18,7 @@ public class DefaultValueConfig {
     }
 
     public Map<String, String> getFieldValues(String service, String clazz) {
-        return defaultValueMap.get(this.genPrefix(service, clazz));
+        return defaultValueMap.get(this.getPrefix(service, clazz));
     }
 
     private Map<String, Map<String, String>> getDefaultValueMap(DefaultValueMapper defaultValueMapper) {
@@ -28,7 +27,7 @@ public class DefaultValueConfig {
         Map<String, Map<String, String>> result = new HashMap<>();
 
         for (DefaultValue defaultValue : defaultValueList) {
-            String prefix = this.genPrefix(defaultValue.getService(), defaultValue.getClazz());
+            String prefix = this.getPrefix(defaultValue.getService(), defaultValue.getClazz());
 
             result.computeIfAbsent(prefix, k -> new HashMap<>());
             result.get(prefix).put(defaultValue.getField(), defaultValue.getValue());
@@ -38,7 +37,7 @@ public class DefaultValueConfig {
         return result;
     }
 
-    private String genPrefix(String service, String clazz) {
+    private String getPrefix(String service, String clazz) {
         return service + "." + clazz;
     }
 }
