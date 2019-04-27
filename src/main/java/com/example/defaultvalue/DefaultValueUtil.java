@@ -1,9 +1,10 @@
 package com.example.defaultvalue;
 
-import com.example.defaultvalue.config.DefaultValueProperties;
+import com.example.defaultvalue.config.DefaultValueConfig;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -16,73 +17,71 @@ import java.util.Map;
 @Log4j2
 @Component
 public class DefaultValueUtil {
-    private DefaultValueProperties defaultValueProperties;
+    @Autowired
+    private DefaultValueConfig defaultValueConfig;
 
-    public DefaultValueUtil(DefaultValueProperties defaultValueProperties){
-        this.defaultValueProperties = defaultValueProperties;
-    }
-
-    public void setDefaultValues(List objs, String propertyPrefix, boolean override) throws Exception {
+    public void setDefaultValues(List objs, String service, String clazz, boolean override) throws Exception {
         if (!CollectionUtils.isEmpty(objs)) {
-            Map<String, Object> defaultValues = this.getDefaultValues(objs.get(0), propertyPrefix);
+
+            Map<String, Object> defaultValues = this.getDefaultValues(objs.get(0), service, clazz);
 
             for (Object obj : objs) {
                 for (Map.Entry<String, Object> entry : defaultValues.entrySet()) {
-                    String fieldName = entry.getKey();
-                    Object defaultValue = entry.getValue();
+                    String field = entry.getKey();
+                    Object value = entry.getValue();
 
                     try {
                         if (!override) {
-                            Object fieldValue = FieldUtils.readDeclaredField(obj, fieldName, true);
+                            Object fieldValue = FieldUtils.readDeclaredField(obj, field, true);
                             if (fieldValue != null) {
                                 continue;
                             }
                         }
-                        FieldUtils.writeDeclaredField(obj, fieldName, defaultValue, true);
+                        FieldUtils.writeDeclaredField(obj, field, value, true);
                     } catch (Exception e) {
-                        log.error("Cannot set default value '" + defaultValue + "' to the field " + obj.getClass().getName() + "." + fieldName);
+                        log.error("Cannot set default value '" + value + "' to the field " + obj.getClass().getName() + "." + field);
                         throw e;
                     }
                 }
             }
-        }
-    }
+        }    }
 
-    public void setDefaultValues(Object obj, String propertyPrefix, boolean override) throws Exception {
+    public void setDefaultValues(Object obj, String service, String clazz, boolean override) throws Exception {
         if (obj != null) {
             List<Object> param = new ArrayList<>();
             param.add(obj);
-            this.setDefaultValues(param, propertyPrefix, override);
+            this.setDefaultValues(param, service, clazz, override);
         }
     }
 
-    private Map<String, Object> getDefaultValues(Object obj, String propertyPrefix) {
-        Map<String, Object> defaultValues = new HashMap<>();
 
+    private Map<String, Object> getDefaultValues(Object obj, String service, String clazz) {
+        Map<String, Object> result = new HashMap<>();
+
+        Map<String, String> fieldValues = defaultValueConfig.getFieldValues(service, clazz);
         Map<String, Class> fieldTypes = this.getFieldTypes(obj);
-        Map<String, String> properties = defaultValueProperties.getProperties(propertyPrefix);
 
-        for (Map.Entry<String, String> entry : properties.entrySet()) {
-            String fieldName = entry.getKey();
-            String defaultValue = entry.getValue();
+        for (Map.Entry<String, String> entry : fieldValues.entrySet()) {
+            String field = entry.getKey();
+            String value = entry.getValue();
 
-            defaultValues.put(fieldName, ConvertUtils.convert(defaultValue, fieldTypes.get(fieldName)));
+            result.put(field, ConvertUtils.convert(value, fieldTypes.get(field)));
         }
 
-        return defaultValues;
+        return result;
     }
 
 
     private Map<String, Class> getFieldTypes(Object obj) {
-        Map<String, Class> fieldTypes = new HashMap<>();
+        Map<String, Class> result = new HashMap<>();
 
         Field[] fields = obj.getClass().getDeclaredFields();
 
         for (Field field : fields) {
-            fieldTypes.put(field.getName(), field.getType());
+            result.put(field.getName(), field.getType());
         }
 
-        return fieldTypes;
+        return result;
     }
 
 }

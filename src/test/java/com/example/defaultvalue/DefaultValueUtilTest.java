@@ -29,11 +29,19 @@ public class DefaultValueUtilTest {
 
 
     @Test
-    public void setDefaultValuesTestWithoutUserId() throws Exception {
+    public void setDefaultValuesTestWithoutUserId_s1() throws Exception {
 
-        defaultValueUtil.setDefaultValues(user, "user", false);
+        defaultValueUtil.setDefaultValues(user, "s1", "user", false);
 
         assertEquals(99999, user.getId().intValue());
+    }
+
+    @Test
+    public void setDefaultValuesTestWithoutUserId_s2() throws Exception {
+
+        defaultValueUtil.setDefaultValues(user, "s2", "user", false);
+
+        assertEquals(10000, user.getId().intValue());
     }
 
     @Test
@@ -41,7 +49,7 @@ public class DefaultValueUtilTest {
 
         user.setId(12345);
 
-        defaultValueUtil.setDefaultValues(user, "user", false);
+        defaultValueUtil.setDefaultValues(user, "s1","user", false);
 
         assertEquals(12345, user.getId().intValue());
     }
@@ -51,7 +59,7 @@ public class DefaultValueUtilTest {
 
         user.setId(12345);
 
-        defaultValueUtil.setDefaultValues(user, "user", true);
+        defaultValueUtil.setDefaultValues(user, "s1","user", true);
 
         assertEquals(99999, user.getId().intValue());
     }
@@ -67,7 +75,7 @@ public class DefaultValueUtilTest {
 
         user.setAddresses(Arrays.asList(address1, address2));
 
-        defaultValueUtil.setDefaultValues(user.getAddresses(), "user.address", false);
+        defaultValueUtil.setDefaultValues(user.getAddresses(), "s1","user.address", false);
 
         address1 = user.getAddresses().get(0);
         address2 = user.getAddresses().get(1);
@@ -90,7 +98,7 @@ public class DefaultValueUtilTest {
 
         user.setAddresses(Arrays.asList(address1, address2));
 
-        defaultValueUtil.setDefaultValues(user.getAddresses(), "user.address", true);
+        defaultValueUtil.setDefaultValues(user.getAddresses(), "s1","user.address", true);
 
         address1 = user.getAddresses().get(0);
         address2 = user.getAddresses().get(1);
