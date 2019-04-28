@@ -14,10 +14,7 @@ public class ReflectionUtil {
     public Map<String, Class> getFieldTypes(Class aClass) {
         Map<String, Class> result = new HashMap<>();
 
-        String className = aClass.getName();
-
         Field[] fields = aClass.getDeclaredFields();
-
         for (Field field : fields) {
             result.put(field.getName(), field.getType());
         }
