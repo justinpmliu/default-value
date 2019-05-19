@@ -7,7 +7,9 @@ import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,9 +18,9 @@ import java.util.Map;
 @Component
 public class DefaultValueProcessor {
 
-    private DefaultValueService defaultValueService;
+    private final DefaultValueService defaultValueService;
 
-    private ReflectionUtil reflectionUtil;
+    private final ReflectionUtil reflectionUtil;
 
     public DefaultValueProcessor(DefaultValueService defaultValueService, ReflectionUtil reflectionUtil) {
         this.defaultValueService = defaultValueService;
@@ -26,36 +28,41 @@ public class DefaultValueProcessor {
     }
 
     public void setDefaultValues(List objs, String service, String clazz, boolean override) throws IllegalAccessException {
-
         Map<String, Object> defaultValues = this.getDefaultValues(objs.get(0), service, clazz);
-
         for (Object obj : objs) {
-            for (Map.Entry<String, Object> entry : defaultValues.entrySet()) {
-                String field = entry.getKey();
-                Object value = entry.getValue();
+            this.setDefaultValues(obj, defaultValues, override);
+        }
+    }
 
-                try {
-                    if (!override) {
-                        Object fieldValue = FieldUtils.readDeclaredField(obj, field, true);
-                        if (fieldValue != null) {
-                            continue;
-                        }
-                    }
-                    FieldUtils.writeDeclaredField(obj, field, value, true);
-                } catch (Exception e) {
-                    log.error("Cannot set default value '" + value + "' to the field " + obj.getClass().getName() + "." + field);
-                    throw e;
+    public void setDefaultValues(Object obj, String service, String clazz, boolean override) throws IllegalAccessException, NoSuchFieldException {
+        // handle the non List fields
+        Map<String, Object> defaultValues = this.getDefaultValues(obj, service, clazz);
+        this.setDefaultValues(obj, defaultValues, override);
+
+        // handle the List fields
+        Map<String, Class> fieldTypes = reflectionUtil.getFieldTypes(obj.getClass());
+
+        for (Map.Entry<String, Class> entry : fieldTypes.entrySet()) {
+            String fieldName = entry.getKey();
+            Class fieldType = entry.getValue();
+
+            if (fieldType == List.class) {
+                // get the actual type of a List<T> field
+                Field field = obj.getClass().getDeclaredField(fieldName);
+                Type genericType = field.getGenericType();
+
+                if (genericType instanceof ParameterizedType) {
+                    ParameterizedType parameterizedType = (ParameterizedType) genericType;
+                    Type[] types = parameterizedType.getActualTypeArguments();
+
+                    // prepare parameters to call this.setDefaultValues(List objs, ...)
+                    String clazzName = (obj.getClass().getSimpleName() + "." + this.getClassName(types[0])).toLowerCase();
+                    List objs = (List) FieldUtils.readDeclaredField(obj, fieldName, true);
+
+                    this.setDefaultValues(objs, service, clazzName, override);
                 }
             }
         }
-
-    }
-
-    public void setDefaultValues(Object obj, String service, String clazz, boolean override) throws IllegalAccessException {
-        List<Object> param = new ArrayList<>();
-        param.add(obj);
-        this.setDefaultValues(param, service, clazz, override);
-
     }
 
     private Map<String, Object> getDefaultValues(Object obj, String service, String clazz) {
@@ -72,4 +79,30 @@ public class DefaultValueProcessor {
         return result;
     }
 
+    private void setDefaultValues(Object obj, Map<String, Object> defaultValues, boolean override) throws IllegalAccessException {
+        for (Map.Entry<String, Object> entry : defaultValues.entrySet()) {
+            String field = entry.getKey();
+            Object value = entry.getValue();
+
+            try {
+                if (!override) {
+                    Object fieldValue = FieldUtils.readDeclaredField(obj, field, true);
+                    if (fieldValue != null) {
+                        continue;
+                    }
+                }
+                FieldUtils.writeDeclaredField(obj, field, value, true);
+            } catch (Exception e) {
+                log.error("Cannot set default value '" + value + "' to the field " + obj.getClass().getName() + "." + field);
+                throw e;
+            }
+        }
+    }
+
+    private String getClassName(Type type) {
+        String typeName = type.getTypeName();
+        int pos = typeName.lastIndexOf('.');
+
+        return typeName.substring(pos + 1);
+    }
 }

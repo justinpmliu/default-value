@@ -27,8 +27,6 @@ public class DefaultValueProcessorTest {
 
     private DefaultValueProcessor defaultValueProcessor;
 
-    private Map<String, DefaultValue> defaultValueMap;
-
     private User user;
 
     @Before
@@ -36,23 +34,28 @@ public class DefaultValueProcessorTest {
         defaultValueProcessor = new DefaultValueProcessor(
                 new DefaultValueService(defaultValueMapper), new ReflectionUtil());
 
-        defaultValueMap = new HashMap<>();
+        user = new User(12345678);
+        user.setAddresses(Arrays.asList(
+                new Address("GZ", "TianHe", 123, true),
+                new Address("FS", "NanHai", null, null)
+        ));
 
-        user = new User(34022999);
+        Map<String, DefaultValue> userDefaultValueMap = new HashMap<>();
+        userDefaultValueMap.put("name", new DefaultValue(1, "s1", "user", "name", "New User"));
 
-        Address address1 = new Address("GZ", "TianHe", 123, true);
-        Address address2 = new Address("FS", "NanHai", null, null);
+        given(defaultValueMapper.findByServiceAndClazz("s1", "user")).willReturn(userDefaultValueMap);
 
-        user.setAddresses(Arrays.asList(address1, address2));
+        Map<String, DefaultValue> addressDefaultValueMap = new HashMap<>();
+        addressDefaultValueMap.put("room", new DefaultValue(1, "s1", "user.address", "room", "999"));
+        addressDefaultValueMap.put("primary", new DefaultValue(2, "s1", "user.address", "primary", "false"));
+
+        given(defaultValueMapper.findByServiceAndClazz("s1", "user.address")).willReturn(addressDefaultValueMap);
+
     }
 
 
     @Test
     public void testSetDefaultValuesWithoutUserName() throws Exception {
-
-        defaultValueMap.put("name", new DefaultValue(1, "s1", "user", "name", "New User"));
-
-        given(defaultValueMapper.findByServiceAndClazz("s1", "user")).willReturn(defaultValueMap);
 
         defaultValueProcessor.setDefaultValues(user, "s1", "user", false);
 
@@ -64,10 +67,6 @@ public class DefaultValueProcessorTest {
 
         user.setName("Justin");
 
-        defaultValueMap.put("name", new DefaultValue(1, "s1", "user", "name", "New User"));
-
-        given(defaultValueMapper.findByServiceAndClazz("s1", "user")).willReturn(defaultValueMap);
-
         defaultValueProcessor.setDefaultValues(user, "s1","user", false);
 
         assertEquals("Justin", user.getName());
@@ -78,10 +77,6 @@ public class DefaultValueProcessorTest {
 
         user.setName("Justin");
 
-        defaultValueMap.put("name", new DefaultValue(1, "s1", "user", "name", "New User"));
-
-        given(defaultValueMapper.findByServiceAndClazz("s1", "user")).willReturn(defaultValueMap);
-
         defaultValueProcessor.setDefaultValues(user, "s1","user", true);
 
         assertEquals("New User", user.getName());
@@ -89,8 +84,6 @@ public class DefaultValueProcessorTest {
 
     @Test
     public void testSetDefaultValuesWithoutUserNameAndNoDefaultValue() throws Exception {
-
-        given(defaultValueMapper.findByServiceAndClazz("s3", "user")).willReturn(defaultValueMap);
 
         defaultValueProcessor.setDefaultValues(user, "s3", "user", false);
 
@@ -100,12 +93,7 @@ public class DefaultValueProcessorTest {
     @Test
     public void testSetDefaultValuesWithAddressAndNotOverride() throws Exception {
 
-        defaultValueMap.put("room", new DefaultValue(1, "s1", "user.address", "room", "999"));
-        defaultValueMap.put("primary", new DefaultValue(2, "s1", "user.address", "primary", "false"));
-
-        given(defaultValueMapper.findByServiceAndClazz("s1", "user.address")).willReturn(defaultValueMap);
-
-        defaultValueProcessor.setDefaultValues(user.getAddresses(), "s1","user.address", false);
+        defaultValueProcessor.setDefaultValues(user, "s1","user", false);
 
         Address address = user.getAddresses().get(0);
 
@@ -116,14 +104,20 @@ public class DefaultValueProcessorTest {
     @Test
     public void testSetDefaultValuesWithAddressAndOverride() throws Exception {
 
-        defaultValueMap.put("room", new DefaultValue(1, "s1", "user.address", "room", "999"));
-        defaultValueMap.put("primary", new DefaultValue(2, "s1", "user.address", "primary", "false"));
-
-        given(defaultValueMapper.findByServiceAndClazz("s1", "user.address")).willReturn(defaultValueMap);
-
-        defaultValueProcessor.setDefaultValues(user.getAddresses(), "s1","user.address", true);
+        defaultValueProcessor.setDefaultValues(user, "s1","user", true);
 
         Address address = user.getAddresses().get(0);
+
+        assertEquals(999, address.getRoom().intValue());
+        assertFalse(address.getPrimary());
+    }
+
+    @Test
+    public void testSetDefaultValuesWithoutAddressRoomAndPrimary() throws Exception {
+
+        defaultValueProcessor.setDefaultValues(user, "s1","user", false);
+
+        Address address = user.getAddresses().get(1);
 
         assertEquals(999, address.getRoom().intValue());
         assertFalse(address.getPrimary());
