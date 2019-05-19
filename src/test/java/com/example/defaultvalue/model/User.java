@@ -6,11 +6,11 @@ import java.util.List;
 
 @Data
 public class User {
-    private String name;
     private Integer id;
+    private String name;
     private List<Address> addresses;
 
-    public User(String name) {
-        this.name = name;
+    public User(Integer id) {
+        this.id = id;
     }
 }
