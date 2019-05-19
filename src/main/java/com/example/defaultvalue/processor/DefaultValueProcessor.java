@@ -28,6 +28,8 @@ public class DefaultValueProcessor {
     }
 
     public void setDefaultValues(List objs, String service, String clazz, boolean override) throws IllegalAccessException {
+        log.info(String.format("Set default values for list, service = %s, clazz = %s", service, clazz));
+
         Map<String, Object> defaultValues = this.getDefaultValues(objs.get(0), service, clazz);
         for (Object obj : objs) {
             this.setDefaultValues(obj, defaultValues, override);
@@ -35,6 +37,8 @@ public class DefaultValueProcessor {
     }
 
     public void setDefaultValues(Object obj, String service, String clazz, boolean override) throws IllegalAccessException, NoSuchFieldException {
+        log.info(String.format("Set default values for object, service = %s, clazz = %s", service, clazz));
+
         // handle the non List fields
         Map<String, Object> defaultValues = this.getDefaultValues(obj, service, clazz);
         this.setDefaultValues(obj, defaultValues, override);
@@ -84,19 +88,15 @@ public class DefaultValueProcessor {
             String field = entry.getKey();
             Object value = entry.getValue();
 
-            try {
-                if (!override) {
-                    Object fieldValue = FieldUtils.readDeclaredField(obj, field, true);
-                    if (fieldValue != null) {
-                        continue;
-                    }
+            if (!override) {
+                Object fieldValue = FieldUtils.readDeclaredField(obj, field, true);
+                if (fieldValue != null) {
+                    continue;
                 }
-                FieldUtils.writeDeclaredField(obj, field, value, true);
-            } catch (Exception e) {
-                log.error("Cannot set default value '" + value + "' to the field " + obj.getClass().getName() + "." + field);
-                throw e;
             }
+            FieldUtils.writeDeclaredField(obj, field, value, true);
         }
+
     }
 
     private String getClassName(Type type) {

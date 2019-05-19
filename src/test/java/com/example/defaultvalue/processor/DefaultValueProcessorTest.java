@@ -7,10 +7,15 @@ import com.example.defaultvalue.model.User;
 import com.example.defaultvalue.service.DefaultValueService;
 import com.example.defaultvalue.util.ReflectionUtil;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.MockitoRule;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,8 +24,12 @@ import java.util.Map;
 import static org.junit.Assert.*;
 import static org.mockito.BDDMockito.given;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class DefaultValueProcessorTest {
+
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
 
     @Mock
     private DefaultValueMapper defaultValueMapper;
