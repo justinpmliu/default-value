@@ -28,7 +28,7 @@ public class DefaultValueProcessor {
     }
 
     public void setDefaultValues(List objs, String service, String clazz, boolean override) throws IllegalAccessException {
-        log.info(String.format("Set default values for list, service = %s, clazz = %s", service, clazz));
+        log.debug(String.format("Set default values for list, service = %s, clazz = %s", service, clazz));
 
         Map<String, Object> defaultValues = this.getDefaultValues(objs.get(0), service, clazz);
         for (Object obj : objs) {
@@ -37,7 +37,7 @@ public class DefaultValueProcessor {
     }
 
     public void setDefaultValues(Object obj, String service, String clazz, boolean override) throws IllegalAccessException, NoSuchFieldException {
-        log.info(String.format("Set default values for object, service = %s, clazz = %s", service, clazz));
+        log.debug(String.format("Set default values for object, service = %s, clazz = %s", service, clazz));
 
         // handle the non List fields
         Map<String, Object> defaultValues = this.getDefaultValues(obj, service, clazz);

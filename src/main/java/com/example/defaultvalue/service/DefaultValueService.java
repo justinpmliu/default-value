@@ -3,6 +3,7 @@ package com.example.defaultvalue.service;
 import com.example.defaultvalue.mapper.DefaultValueMapper;
 import com.example.defaultvalue.model.DefaultValue;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -19,9 +20,8 @@ public class DefaultValueService {
         this.defaultValueMapper = defaultValueMapper;
     }
 
-    @Cacheable(value="fieldValueCache", key="#service + '.' + #clazz")
+    @Cacheable(value="defaultValueCache", key="#service + '.' + #clazz")
     public Map<String, String> getFieldValues(String service, String clazz) {
-
         Map<String, String> result = new HashMap<>();
         Map<String, DefaultValue> defaultValueMap = defaultValueMapper.findByServiceAndClazz(service, clazz);
 
@@ -31,5 +31,8 @@ public class DefaultValueService {
 
         return result;
     }
+
+    @CacheEvict(value="defaultValueCache", allEntries = true)
+    public void evictDefaultValueCache(){}
 
 }
