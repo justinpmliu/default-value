@@ -47,15 +47,15 @@ public class DefaultValueProcessorTest {
         ));
 
         Map<String, DefaultValue> userDefaultValueMap = new HashMap<>();
-        userDefaultValueMap.put("name", new DefaultValue(1, "s1", "user", "name", "New User"));
+        userDefaultValueMap.put("name", new DefaultValue(1, "s1", "User", "name", "New User"));
 
-        given(defaultValueMapper.findByServiceAndClazz("s1", "user")).willReturn(userDefaultValueMap);
+        given(defaultValueMapper.findByServiceAndClazz("s1", "User")).willReturn(userDefaultValueMap);
 
         Map<String, DefaultValue> addressDefaultValueMap = new HashMap<>();
-        addressDefaultValueMap.put("room", new DefaultValue(1, "s1", "user.address", "room", "999"));
-        addressDefaultValueMap.put("primary", new DefaultValue(2, "s1", "user.address", "primary", "false"));
+        addressDefaultValueMap.put("room", new DefaultValue(1, "s1", "User.Address", "room", "999"));
+        addressDefaultValueMap.put("primary", new DefaultValue(2, "s1", "User.Address", "primary", "false"));
 
-        given(defaultValueMapper.findByServiceAndClazz("s1", "user.address")).willReturn(addressDefaultValueMap);
+        given(defaultValueMapper.findByServiceAndClazz("s1", "User.Address")).willReturn(addressDefaultValueMap);
 
     }
 
@@ -63,7 +63,7 @@ public class DefaultValueProcessorTest {
     @Test
     public void testSetDefaultValuesWithoutUserName() throws Exception {
 
-        defaultValueProcessor.setDefaultValues(user, "s1", "user", false);
+        defaultValueProcessor.setDefaultValues(user, "s1", "User", false);
 
         assertEquals("New User", user.getName());
     }
@@ -73,7 +73,7 @@ public class DefaultValueProcessorTest {
 
         user.setName("Justin");
 
-        defaultValueProcessor.setDefaultValues(user, "s1","user", false);
+        defaultValueProcessor.setDefaultValues(user, "s1","User", false);
 
         assertEquals("Justin", user.getName());
     }
@@ -83,7 +83,7 @@ public class DefaultValueProcessorTest {
 
         user.setName("Justin");
 
-        defaultValueProcessor.setDefaultValues(user, "s1","user", true);
+        defaultValueProcessor.setDefaultValues(user, "s1","User", true);
 
         assertEquals("New User", user.getName());
     }
@@ -91,7 +91,7 @@ public class DefaultValueProcessorTest {
     @Test
     public void testSetDefaultValuesWithoutUserNameAndNoDefaultValue() throws Exception {
 
-        defaultValueProcessor.setDefaultValues(user, "s3", "user", false);
+        defaultValueProcessor.setDefaultValues(user, "s3", "User", false);
 
         assertNull(user.getName());
     }
@@ -99,7 +99,7 @@ public class DefaultValueProcessorTest {
     @Test
     public void testSetDefaultValuesWithAddressAndNotOverride() throws Exception {
 
-        defaultValueProcessor.setDefaultValues(user, "s1","user", false);
+        defaultValueProcessor.setDefaultValues(user, "s1","User", false);
 
         Address address = user.getAddresses().get(0);
 
@@ -110,7 +110,7 @@ public class DefaultValueProcessorTest {
     @Test
     public void testSetDefaultValuesWithAddressAndOverride() throws Exception {
 
-        defaultValueProcessor.setDefaultValues(user, "s1","user", true);
+        defaultValueProcessor.setDefaultValues(user, "s1","User", true);
 
         Address address = user.getAddresses().get(0);
 
@@ -121,7 +121,7 @@ public class DefaultValueProcessorTest {
     @Test
     public void testSetDefaultValuesWithoutAddressRoomAndPrimary() throws Exception {
 
-        defaultValueProcessor.setDefaultValues(user, "s1","user", false);
+        defaultValueProcessor.setDefaultValues(user, "s1","User", false);
 
         Address address = user.getAddresses().get(1);
 

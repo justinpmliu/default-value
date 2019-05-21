@@ -56,7 +56,7 @@ public class DefaultValueProcessor {
                     Type[] types = parameterizedType.getActualTypeArguments();
 
                     // prepare parameters to call this.setDefaultValues(List objs, ...)
-                    String clazzName = (obj.getClass().getSimpleName() + "." + this.getClassName(types[0])).toLowerCase();
+                    String clazzName = obj.getClass().getSimpleName() + "." + this.getClassName(types[0]);
                     List objs = (List) FieldUtils.readDeclaredField(obj, fieldName, true);
 
                     this.setDefaultValues(objs, service, clazzName, override);

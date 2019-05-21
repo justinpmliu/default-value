@@ -10,13 +10,13 @@ CREATE TABLE default_value (
 );
 
 INSERT INTO default_value (service, clazz, field, value)
-VALUES ('s1', 'user', 'id', '99999');
+VALUES ('s1', 'User', 'id', '99999');
 
 INSERT INTO default_value (service, clazz, field, value)
-VALUES ('s1', 'user.address', 'room', '999');
+VALUES ('s1', 'User.Address', 'room', '999');
 
 INSERT INTO default_value (service, clazz, field, value)
-VALUES ('s1', 'user.address', 'primary', 'false');
+VALUES ('s1', 'User.Address', 'primary', 'false');
 
 INSERT INTO default_value (service, clazz, field, value)
-VALUES ('s2', 'user', 'id', '10000');
+VALUES ('s2', 'User', 'id', '10000');
