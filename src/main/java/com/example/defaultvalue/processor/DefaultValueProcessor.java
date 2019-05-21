@@ -1,7 +1,6 @@
 package com.example.defaultvalue.processor;
 
 import com.example.defaultvalue.service.DefaultValueService;
-import com.example.defaultvalue.util.ReflectionUtil;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -20,11 +19,8 @@ public class DefaultValueProcessor {
 
     private final DefaultValueService defaultValueService;
 
-    private final ReflectionUtil reflectionUtil;
-
-    public DefaultValueProcessor(DefaultValueService defaultValueService, ReflectionUtil reflectionUtil) {
+    public DefaultValueProcessor(DefaultValueService defaultValueService) {
         this.defaultValueService = defaultValueService;
-        this.reflectionUtil = reflectionUtil;
     }
 
     public void setDefaultValues(List objs, String service, String clazz, boolean override) throws IllegalAccessException {
@@ -44,7 +40,7 @@ public class DefaultValueProcessor {
         this.setDefaultValues(obj, defaultValues, override);
 
         // handle the List fields
-        Map<String, Class> fieldTypes = reflectionUtil.getFieldTypes(obj.getClass());
+        Map<String, Class> fieldTypes = defaultValueService.getFieldTypes(obj.getClass());
 
         for (Map.Entry<String, Class> entry : fieldTypes.entrySet()) {
             String fieldName = entry.getKey();
@@ -73,7 +69,7 @@ public class DefaultValueProcessor {
         Map<String, Object> result = new HashMap<>();
 
         Map<String, String> fieldValues = defaultValueService.getFieldValues(service, clazz);
-        Map<String, Class> fieldTypes = reflectionUtil.getFieldTypes(obj.getClass());
+        Map<String, Class> fieldTypes = defaultValueService.getFieldTypes(obj.getClass());
 
         for (Map.Entry<String, String> entry : fieldValues.entrySet()) {
             String field = entry.getKey();

@@ -5,14 +5,12 @@ import com.example.defaultvalue.model.Address;
 import com.example.defaultvalue.model.DefaultValue;
 import com.example.defaultvalue.model.User;
 import com.example.defaultvalue.service.DefaultValueService;
-import com.example.defaultvalue.util.ReflectionUtil;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.MockitoRule;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -40,8 +38,7 @@ public class DefaultValueProcessorTest {
 
     @Before
     public void setUp() {
-        defaultValueProcessor = new DefaultValueProcessor(
-                new DefaultValueService(defaultValueMapper), new ReflectionUtil());
+        defaultValueProcessor = new DefaultValueProcessor(new DefaultValueService(defaultValueMapper));
 
         user = new User(12345678);
         user.setAddresses(Arrays.asList(
